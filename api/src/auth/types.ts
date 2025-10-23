@@ -1,0 +1,1 @@
+export type JwtPayload = { sub: number; username: string; perms: string[] };

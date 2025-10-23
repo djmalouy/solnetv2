@@ -1,0 +1,43 @@
+{
+    "name": "solnet-api",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "nest start --watch",
+        "build": "nest build",
+        "start": "node dist/main.js",
+        "prisma:generate": "prisma generate",
+        "prisma:migrate": "prisma migrate dev",
+        "seed": "ts-node prisma/seed.ts"
+    },
+    "dependencies": {
+        "@nestjs/common": "10.4.20",
+        "@nestjs/core": "^7.6.18",
+        "@nestjs/jwt": "^8.0.1",
+        "@nestjs/mapped-types": "^2.1.0",
+        "@nestjs/passport": "^8.2.2",
+        "@nestjs/platform-express": "^7.6.18",
+        "@prisma/client": "^5.18.0",
+        "argon2": "^0.41.1",
+        "class-transformer": "^0.5.1",
+        "class-validator": "^0.14.0",
+        "cookie": "^1.0.2",
+        "helmet": "^7.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "passport": "^0.7.0",
+        "passport-jwt": "^4.0.1",
+        "reflect-metadata": "^0.2.2",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@nestjs/cli": "^11.0.10",
+        "@nestjs/testing": "^7.6.18",
+        "@types/cookie": "^0.5.4",
+        "@types/jsonwebtoken": "^9.0.6",
+        "@types/node": "^20.11.0",
+        "@types/passport-jwt": "^4.0.1",
+        "prisma": "^5.18.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.4.5"
+    }
+}

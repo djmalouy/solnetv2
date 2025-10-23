@@ -1,0 +1,23 @@
+# Usa Debian en vez de Alpine para evitar lío de OpenSSL
+FROM node:20-bookworm-slim
+
+# Evita prompts en apt y agrega OpenSSL y certificados
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends openssl ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Si tenés package-lock.json, copiá ambos y usa npm ci
+COPY package.json package-lock.json* ./
+RUN npm install --legacy-peer-deps --no-audit --no-fund
+
+# Copiá el resto del código
+COPY . .
+
+# Generá Prisma Client y build de Nest
+RUN npx prisma generate && npm run build
+
+EXPOSE 3000
+CMD ["node", "dist/main.js"]

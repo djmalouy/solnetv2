@@ -3,6 +3,7 @@ version: "3.9"
 services:
   db:
     image: mysql:8.0
+    container_name: solnet-db
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -15,23 +16,38 @@ services:
       - dbdata:/var/lib/mysql
 
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+    container_name: solnet-backend
     depends_on:
       - db
-    env_file: ./backend/.env
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: "mysql://solnet:solnet@db:3306/solnetcrm"
     ports:
       - "3000:3000"
-    command: ["npm", "run", "start:dev"]
+    command: npm run start:dev
+    working_dir: /app
     volumes:
       - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+    container_name: solnet-frontend
+    depends_on:
+      - backend
     ports:
       - "5173:5173"
-    command: ["npm", "run", "dev", "--", "--host"]
+    command: npm run dev -- --host
+    working_dir: /app
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
 
 volumes:
   dbdata:

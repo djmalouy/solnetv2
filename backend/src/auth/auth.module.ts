@@ -6,14 +6,14 @@ import { JwtStrategy } from './jwt.strategy';
 
 
 @Module({
-imports: [
-JwtModule.register({
-secret: process.env.JWT_SECRETO,
-signOptions: { expiresIn: process.env.JWT_EXPIRA || '8h' },
-}),
-],
-providers: [AuthService, JwtStrategy],
-controllers: [AuthController],
-exports: [AuthService],
+    imports: [
+    JwtModule.register({
+    secret: process.env.JWT_SECRETO,
+    signOptions: { expiresIn: process.env.JWT_EXPIRA || '8h' },
+    }),
+    ],
+    providers: [AuthService, JwtStrategy],
+    controllers: [AuthController],
+    exports: [AuthService],
 })
 export class AuthModule {}

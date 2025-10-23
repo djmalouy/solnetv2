@@ -53,16 +53,62 @@ let AuthService = class AuthService {
         this.jwt = jwt;
     }
     async login(usuario, clave) {
-        const user = await prisma.usuario.findUnique({ where: { usuario }, include: { roles: true } });
+        const user = await prisma.usuario.findUnique({
+            where: { usuario },
+            include: {
+                roles: {
+                    include: {
+                        rol: true,
+                    },
+                },
+            },
+        });
         if (!user)
             throw new common_1.UnauthorizedException('Usuario o clave inválidos');
-        const ok = await bcrypt.compare(clave, user.clave);
+        const ok = await bcrypt.compare(clave, user.hashClave);
+        console.log('🧩 Comparando clave:', clave, 'con hash:', user.hashClave, '=>', ok);
         if (!ok)
             throw new common_1.UnauthorizedException('Usuario o clave inválidos');
-        const payload = { sub: user.id, usuario: user.usuario, nombre: user.nombre, apellido: user.apellido, roles: user.roles.map((r) => r.nombre) };
+        const roles = user.roles.map((r) => r.rol.nombre);
+        const payload = {
+            sub: user.id,
+            usuario: user.usuario,
+            nombre: user.nombre,
+            apellido: user.apellido,
+            roles,
+        };
         const token = await this.jwt.signAsync(payload);
-        await prisma.usuario.update({ where: { id: user.id }, data: { ultimoAcceso: new Date() } });
-        return { token, usuario: { id: user.id, nombre: user.nombre, apellido: user.apellido, roles: payload.roles } };
+        await prisma.usuario.update({
+            where: { id: user.id },
+            data: { ultimoAcceso: new Date() },
+        });
+        return {
+            token,
+            usuario: {
+                id: user.id,
+                nombre: user.nombre,
+                apellido: user.apellido,
+                roles,
+            },
+        };
+    }
+    async perfil(id) {
+        const user = await prisma.usuario.findUnique({
+            where: { id },
+            include: {
+                roles: { include: { rol: true } },
+            },
+        });
+        if (!user)
+            throw new common_1.UnauthorizedException('Usuario no encontrado');
+        const roles = user.roles.map((r) => r.rol.nombre);
+        return {
+            id: user.id,
+            nombre: user.nombre,
+            apellido: user.apellido,
+            usuario: user.usuario,
+            roles,
+        };
     }
 };
 exports.AuthService = AuthService;

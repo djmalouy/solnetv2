@@ -106,19 +106,31 @@ model Auditoria {
 
 model Usuario {
   id            Int       @id @default(autoincrement())
-  usuario       String    @unique
-  clave         String
   nombre        String
   apellido      String
-  roles         Rol[]
+  usuario       String    @unique
+  hashClave     String
+  activo        Boolean   @default(true)
   ultimoAcceso  DateTime?
   creadoEn      DateTime  @default(now())
+  roles         UsuariosRoles[]   
 }
 
 model Rol {
-  id       Int       @id @default(autoincrement())
-  nombre   String
-  usuarios Usuario[]
+  id          Int              @id @default(autoincrement())
+  nombre      String           @unique
+  descripcion String?
+  usuarios    UsuariosRoles[]  
+  rolesPermisos RolesPermisos[]
+}
+
+model UsuariosRoles {
+  id_usuario Int
+  id_rol     Int
+  usuario    Usuario @relation(fields: [id_usuario], references: [id])
+  rol        Rol     @relation(fields: [id_rol], references: [id])
+
+  @@id([id_usuario, id_rol])
 }
 
 model Configuracion {
@@ -130,3 +142,18 @@ model Configuracion {
 
   @@unique([grupo, clave])
 } 
+
+model Permiso {
+  id          Int      @id @default(autoincrement())
+  clave       String   @unique
+  descripcion String?
+  rolesPermisos RolesPermisos[]
+}
+
+model RolesPermisos {
+  idRol     Int
+  idPermiso Int
+  rol       Rol      @relation(fields: [idRol], references: [id])
+  permiso   Permiso  @relation(fields: [idPermiso], references: [id])
+  @@id([idRol, idPermiso])
+}

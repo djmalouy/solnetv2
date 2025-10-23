@@ -69,6 +69,8 @@ model Cliente {
   email     String?
   telefono  String?
   direccion String?
+  creadoEn  DateTime  @default(now())
+  reparaciones Reparacion[]
   ventas    Venta[]
 }
 

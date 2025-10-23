@@ -37,6 +37,7 @@ enum AccionAuditoria {
 model Reparacion {
   id             Int              @id @default(autoincrement())
   idCliente      Int
+  cliente        Cliente          @relation(fields: [idCliente], references: [id])
   dispositivo    String
   marca          String
   modelo         String
@@ -63,15 +64,15 @@ model Producto {
 }
 
 model Cliente {
-  id        Int     @id @default(autoincrement())
-  nombre    String
-  apellido  String
-  email     String?
-  telefono  String?
-  direccion String?
-  creadoEn  DateTime  @default(now())
+  id           Int          @id @default(autoincrement())
+  nombre       String
+  apellido     String
+  email        String?
+  telefono     String?
+  direccion    String?
+  creadoEn     DateTime     @default(now())
   reparaciones Reparacion[]
-  ventas    Venta[]
+  ventas       Venta[]
 }
 
 model Venta {
@@ -107,22 +108,22 @@ model Auditoria {
 }
 
 model Usuario {
-  id            Int       @id @default(autoincrement())
-  nombre        String
-  apellido      String
-  usuario       String    @unique
-  hashClave     String
-  activo        Boolean   @default(true)
-  ultimoAcceso  DateTime?
-  creadoEn      DateTime  @default(now())
-  roles         UsuariosRoles[]   
+  id           Int             @id @default(autoincrement())
+  nombre       String
+  apellido     String
+  usuario      String          @unique
+  hashClave    String
+  activo       Boolean         @default(true)
+  ultimoAcceso DateTime?
+  creadoEn     DateTime        @default(now())
+  roles        UsuariosRoles[]
 }
 
 model Rol {
-  id          Int              @id @default(autoincrement())
-  nombre      String           @unique
-  descripcion String?
-  usuarios    UsuariosRoles[]  
+  id            Int             @id @default(autoincrement())
+  nombre        String          @unique
+  descripcion   String?
+  usuarios      UsuariosRoles[]
   rolesPermisos RolesPermisos[]
 }
 
@@ -136,26 +137,27 @@ model UsuariosRoles {
 }
 
 model Configuracion {
-  id      Int      @id @default(autoincrement())
-  grupo   String
-  clave   String
-  valor   String
-  activo  Boolean  @default(true)
+  id     Int     @id @default(autoincrement())
+  grupo  String
+  clave  String
+  valor  String
+  activo Boolean @default(true)
 
   @@unique([grupo, clave])
-} 
+}
 
 model Permiso {
-  id          Int      @id @default(autoincrement())
-  clave       String   @unique
-  descripcion String?
+  id            Int             @id @default(autoincrement())
+  clave         String          @unique
+  descripcion   String?
   rolesPermisos RolesPermisos[]
 }
 
 model RolesPermisos {
   idRol     Int
   idPermiso Int
-  rol       Rol      @relation(fields: [idRol], references: [id])
-  permiso   Permiso  @relation(fields: [idPermiso], references: [id])
+  rol       Rol     @relation(fields: [idRol], references: [id])
+  permiso   Permiso @relation(fields: [idPermiso], references: [id])
+
   @@id([idRol, idPermiso])
 }

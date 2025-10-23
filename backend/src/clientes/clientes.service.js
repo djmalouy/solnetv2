@@ -17,7 +17,7 @@ let ClientesService = class ClientesService {
                 OR: [
                     { nombre: { contains: buscar } },
                     { apellido: { contains: buscar } },
-                    { mail: { contains: buscar } },
+                    { email: { contains: buscar } },
                     { telefono: { contains: buscar } }
                 ]
             } : undefined,

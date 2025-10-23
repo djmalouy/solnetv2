@@ -13,15 +13,17 @@ const prisma = new client_1.PrismaClient();
 let ClientesService = class ClientesService {
     buscar(buscar) {
         return prisma.cliente.findMany({
-            where: buscar ? {
-                OR: [
-                    { nombre: { contains: buscar } },
-                    { apellido: { contains: buscar } },
-                    { email: { contains: buscar } },
-                    { telefono: { contains: buscar } }
-                ]
-            } : undefined,
-            orderBy: { id: 'desc' }
+            where: buscar
+                ? {
+                    OR: [
+                        { nombre: { contains: buscar } },
+                        { apellido: { contains: buscar } },
+                        { email: { contains: buscar } },
+                        { telefono: { contains: buscar } },
+                    ],
+                }
+                : undefined,
+            orderBy: { id: 'desc' },
         });
     }
     crear(data) {

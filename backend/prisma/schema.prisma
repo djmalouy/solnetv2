@@ -1,0 +1,132 @@
+// === CONFIGURACIÓN DEL CLIENTE Y BASE DE DATOS ===
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// === ENUMERACIONES ===
+
+enum EstadoReparacion {
+  RECIBIDO
+  DIAGNOSTICO
+  EN_REPARACION
+  LISTO
+  ENTREGADO
+  CANCELADO
+}
+
+enum EstadoVenta {
+  PENDIENTE
+  PAGADA
+  ANULADA
+}
+
+enum AccionAuditoria {
+  INSERT
+  UPDATE
+  DELETE
+}
+
+// === MODELOS PRINCIPALES ===
+
+model Reparacion {
+  id             Int              @id @default(autoincrement())
+  idCliente      Int
+  dispositivo    String
+  marca          String
+  modelo         String
+  observaciones  String?
+  chip           Boolean          @default(false)
+  memoria        Boolean          @default(false)
+  presentaGolpes Boolean          @default(false)
+  protectorFunda Boolean          @default(false)
+  senia          Decimal          @default(0)
+  total          Decimal          @default(0)
+  estado         EstadoReparacion @default(RECIBIDO)
+  creadoEn       DateTime         @default(now())
+}
+
+model Producto {
+  id           Int            @id @default(autoincrement())
+  codigo       String         @unique
+  nombre       String
+  descripcion  String?
+  precioCompra Decimal        @default(0)
+  precioVenta  Decimal        @default(0)
+  activo       Boolean        @default(true)
+  detalles     VentaDetalle[]
+}
+
+model Cliente {
+  id        Int     @id @default(autoincrement())
+  nombre    String
+  apellido  String
+  email     String?
+  telefono  String?
+  direccion String?
+  ventas    Venta[]
+}
+
+model Venta {
+  id        Int            @id @default(autoincrement())
+  cliente   Cliente        @relation(fields: [idCliente], references: [id])
+  idCliente Int
+  subtotal  Decimal        @default(0)
+  total     Decimal        @default(0)
+  estado    EstadoVenta    @default(PENDIENTE)
+  creadoEn  DateTime       @default(now())
+  detalles  VentaDetalle[]
+}
+
+model VentaDetalle {
+  id             Int      @id @default(autoincrement())
+  venta          Venta    @relation(fields: [idVenta], references: [id])
+  idVenta        Int
+  producto       Producto @relation(fields: [idProducto], references: [id])
+  idProducto     Int
+  cantidad       Int
+  precioUnitario Decimal
+  totalLinea     Decimal
+}
+
+model Auditoria {
+  id         Int             @id @default(autoincrement())
+  fechaHora  DateTime        @default(now())
+  accion     AccionAuditoria
+  tabla      String
+  registroId String
+  idUsuario  Int?
+  log        Json?
+}
+
+model Usuario {
+  id            Int       @id @default(autoincrement())
+  usuario       String    @unique
+  clave         String
+  nombre        String
+  apellido      String
+  roles         Rol[]
+  ultimoAcceso  DateTime?
+  creadoEn      DateTime  @default(now())
+}
+
+model Rol {
+  id       Int       @id @default(autoincrement())
+  nombre   String
+  usuarios Usuario[]
+}
+
+model Configuracion {
+  id      Int      @id @default(autoincrement())
+  grupo   String
+  clave   String
+  valor   String
+  activo  Boolean  @default(true)
+
+  @@unique([grupo, clave])
+} 

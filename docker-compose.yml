@@ -27,6 +27,7 @@ services:
       DATABASE_URL: "mysql://solnet:solnet@db:3306/solnetcrm"
     ports:
       - "3000:3000"
+      - "5555:5555"
     command: npm run start:dev
     working_dir: /app
     volumes:
